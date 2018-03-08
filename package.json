@@ -1,0 +1,14 @@
+{
+  "name": "viper-test",
+  "version": "1.0.0",
+  "description": "Test for webworker and crypto functionalities for DocuLayer",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "S. van Schooten",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1"
+  }
+}

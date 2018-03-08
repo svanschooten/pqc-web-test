@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="node_modules/crypto-js/crypto-js.js"></script>
+    <script src="ntru.js"></script>
+    <script src="mceliece.js"></script>
+</head>
+<body>
+
+<h2>WebWorker</h2>
+<img id="result" src=""/>
+<p id="message"></p>
+<button onclick="startWorker()">Start Worker</button>
+<button onclick="stopWorker()">Stop Worker</button>
+<br>
+<br>
+<h2>AES decrypt</h2>
+<label>IV (HEX): <input id="aes_iv"/></label>
+<br>
+<label>key (HEX): <input id="aes_key"/></label>
+<br>
+<label>ciphertext (HEX): <input id="aes_cipher"/></label>
+<br>
+<button onclick="decryptAES()">decrypt</button>
+<p id="aes_result">decrypting result</p>
+<br>
+<br>
+<h2>NTRU</h2>
+<button onclick="generateKeysNTRU()">Generate NTRU keys</button>
+<p>public key (HEX): <span id="pubkey_ntru"></span></p>
+<p>private key (HEX): <span id="seckey_ntru"></span></p>
+<label>ciphertext (HEX): <input id="ntru_cipher"/></label>
+<br>
+<button onclick="decryptNTRU()">decrypt</button>
+<p id="ntru_result">decrypting result</p>
+<br>
+<br>
+<h2>McEliece</h2>
+<button onclick="generateKeysMcEliece()">Generate McEliece keys</button>
+<p>public key (Base64): <span id="pubkey_mceliece"></span></p>
+<p>private key (Base64): <span id="seckey_mceliece"></span></p>
+
+<script>
+    function bin2hex(data) {
+        let hex = "";
+        for (let byte in data) {
+            hex += ('0' + (byte & 0xFF).toString(16)).slice(-2)
+        }
+        return CryptoJS.enc.Hex.parse(hex);
+    }
+
+    function binToB64(bin) {
+        return btoa(String.fromCharCode.apply(null, bin));
+    }
+
+    function b64toBin(b64encoded) {
+        return new Uint8Array(atob(b64encoded).split("").map(function (c) {
+            return c.charCodeAt(0);
+        }));
+    }
+
+    function byteArrayToWordArray(ba) {
+        let wa = [],
+            i;
+        for (i = 0; i < ba.length; i++) {
+            wa[(i / 4) | 0] |= ba[i] << (24 - 8 * i);
+        }
+
+        return CryptoJS.lib.WordArray.create(wa, ba.length);
+    }
+
+    function hex2bin(wordArray) {
+        // Shortcuts
+        let words = wordArray.words;
+        let sigBytes = wordArray.sigBytes;
+
+        // Convert
+        let u8 = new Uint8Array(sigBytes);
+        for (let i = 0; i < sigBytes; i++) {
+            let byte = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+            u8[i]=byte;
+        }
+
+        return u8;
+    }
+
+</script>
+
+<script src="ntru-test.js"></script>
+<script src="webworker-test.js"></script>
+<script src="mcaliece-test.js"></script>
+<script src="aes-test.js"></script>
+</body>
+</html>
