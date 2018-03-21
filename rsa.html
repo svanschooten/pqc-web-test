@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>JavaScript Test RSA</title>
+    <script type="text/javascript" src=./amcl/rand.js></script>
+    <script type="text/javascript" src=./amcl/rom_curve.js></script>
+    <script type="text/javascript" src=./amcl/rom_field.js></script>
+    <script type="text/javascript" src=./amcl/uint64.js></script>
+    <script type="text/javascript" src=./amcl/aes.js></script>
+    <script type="text/javascript" src=./amcl/big.js></script>
+    <script type="text/javascript" src=./amcl/gcm.js></script>
+    <script type="text/javascript" src=./amcl/hash256.js></script>
+    <script type="text/javascript" src=./amcl/hash384.js></script>
+    <script type="text/javascript" src=./amcl/hash512.js></script>
+    <script type="text/javascript" src=./amcl/sha3.js></script>
+    <script type="text/javascript" src=./amcl/newhope.js></script>
+    <script type="text/javascript" src=./amcl/nhs.js></script>
+    <script type="text/javascript" src=./amcl/fp.js></script>
+    <script type="text/javascript" src=./amcl/fp2.js></script>
+    <script type="text/javascript" src=./amcl/fp4.js></script>
+    <script type="text/javascript" src=./amcl/fp12.js></script>
+    <script type="text/javascript" src=./amcl/ff.js></script>
+    <script type="text/javascript" src=./amcl/rsa.js></script>
+    <script type="text/javascript" src=./amcl/ecp.js></script>
+    <script type="text/javascript" src=./amcl/ecp2.js></script>
+    <script type="text/javascript" src=./amcl/ecdh.js></script>
+    <script type="text/javascript" src=./amcl/pair.js></script>
+    <script type="text/javascript" src=./amcl/mpin.js></script>
+    <script type="text/javascript" src=./amcl/ctx.js></script>
+    <script src="util.js"></script>
+</head>
+<body>
+<h1>JavaScript Test RSA</h1>
+<script type="application/javascript">
+    let ctx = new CTX('RSA2048');
+
+    let i, j = 0, res;
+    let result;
+    var rng = new ctx.RAND();
+
+    let sha = ctx.RSA.HASH_TYPE;
+
+    let message = "Hello World\n";
+
+    let pub = new ctx.rsa_public_key(ctx.FF.FFLEN);
+    let priv = new ctx.rsa_private_key(ctx.FF.HFLEN);
+
+    let ML = [];
+    let C = [];
+    let S = [];
+
+    let start, end, time;
+    start = new Date().getTime();
+    window.document.write("<br> Generating RSA public/private key pair (slow!)  <br>");
+    ctx.RSA.KEY_PAIR(rng, 65537, priv, pub);
+    end = new Date().getTime();
+    time = end - start;
+    window.document.write("Time in ms= " + time + "<br>");
+
+    let M = ctx.RSA.stringtobytes(message);
+    window.document.write("Encrypting test string <br>");
+
+    let E = ctx.RSA.OAEP_ENCODE(sha, M, rng, null);
+    /* OAEP encode message m to e  */
+    window.document.write("Encoding= 0x" + ctx.RSA.bytestohex(E) + "<br>");
+
+    window.document.write("Public key= 0x" + pub.n.toString() + "<br>");
+
+    start = new Date().getTime();
+    ctx.RSA.ENCRYPT(pub, E, C);
+    /* encrypt encoded message */
+    end = new Date().getTime();
+    time = end - start;
+    window.document.write("Time in ms= " + time + "<br>");
+
+    window.document.write("Ciphertext= 0x" + ctx.RSA.bytestohex(C) + "<br>");
+
+    window.document.write("Decrypting test string <br>");
+    start = new Date().getTime();
+    ctx.RSA.DECRYPT(priv, C, ML);
+    end = new Date().getTime();
+    time = end - start;
+    window.document.write("Time in ms= " + time + "<br>");
+
+    let cmp = true;
+    if (E.length != ML.length) cmp = false;
+    else {
+        for (let j = 0; j < E.length; j++)
+            if (E[j] != ML[j]) cmp = false;
+    }
+    if (cmp) window.document.write("Decryption is OK <br>");
+    else window.document.write("Decryption Failed <br>");
+
+    let MS = ctx.RSA.OAEP_DECODE(sha, null, ML);
+    /* OAEP decode message  */
+    window.document.write("Decoding= 0x" + ctx.RSA.bytestohex(MS) + "<br>");
+
+    window.document.write("message= " + ctx.RSA.bytestostring(MS) + "<br>");
+
+
+    window.document.write("Signing message <br>");
+    ctx.RSA.PKCS15(sha, M, C);
+
+    ctx.RSA.DECRYPT(priv, C, S);
+    /* create signature in S */
+
+    window.document.write("Signature= 0x" + ctx.RSA.bytestohex(S) + "<br>");
+
+    ctx.RSA.ENCRYPT(pub, S, ML);
+
+    cmp = true;
+    if (C.length != ML.length) cmp = false;
+    else {
+        for (let j = 0; j < C.length; j++)
+            if (C[j] != ML[j]) cmp = false;
+    }
+    if (cmp) window.document.write("Signature is valid <br>");
+    else window.document.write("Signature is INVALID <br>");
+
+    ctx.RSA.PRIVATE_KEY_KILL(priv);
+</script>
+
+</body>
+</html>

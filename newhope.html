@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>JavaScript Test NHS</title>
+    <script type="text/javascript" src=./amcl/rand.js></script>
+    <script type="text/javascript" src=./amcl/rom_curve.js></script>
+    <script type="text/javascript" src=./amcl/rom_field.js></script>
+    <script type="text/javascript" src=./amcl/uint64.js></script>
+    <script type="text/javascript" src=./amcl/aes.js></script>
+    <script type="text/javascript" src=./amcl/big.js></script>
+    <script type="text/javascript" src=./amcl/gcm.js></script>
+    <script type="text/javascript" src=./amcl/hash256.js></script>
+    <script type="text/javascript" src=./amcl/hash384.js></script>
+    <script type="text/javascript" src=./amcl/hash512.js></script>
+    <script type="text/javascript" src=./amcl/sha3.js></script>
+    <script type="text/javascript" src=./amcl/newhope.js></script>
+    <script type="text/javascript" src=./amcl/nhs.js></script>
+    <script type="text/javascript" src=./amcl/fp.js></script>
+    <script type="text/javascript" src=./amcl/fp2.js></script>
+    <script type="text/javascript" src=./amcl/fp4.js></script>
+    <script type="text/javascript" src=./amcl/fp12.js></script>
+    <script type="text/javascript" src=./amcl/ff.js></script>
+    <script type="text/javascript" src=./amcl/rsa.js></script>
+    <script type="text/javascript" src=./amcl/ecp.js></script>
+    <script type="text/javascript" src=./amcl/ecp2.js></script>
+    <script type="text/javascript" src=./amcl/ecdh.js></script>
+    <script type="text/javascript" src=./amcl/pair.js></script>
+    <script type="text/javascript" src=./amcl/mpin.js></script>
+    <script type="text/javascript" src=./amcl/ctx.js></script>
+    <script src="util.js"></script>
+</head>
+<body>
+<h1>JavaScript Test NHS</h1>
+
+<script>
+
+    // Test NewHope Simple
+    // See https://eprint.iacr.org/2016/1157 (Alkim, Ducas, Popplemann and Schwabe)
+    // See https://github.com/milagro-crypto/amcl/blob/master/version3/js/TestNHS.html
+
+    let ctx = new CTX();
+
+    let RAW= new Uint8Array(100);
+    let crng=new ctx.RAND(); crng.clean();
+
+    window.crypto.getRandomValues(RAW);
+    crng.seed(100,RAW);
+    // let S=[];
+    let SB=[];
+    let UC=[];
+    // let KEYA=[];
+    let KEYB=[];
+
+    // ctx.NHS.SERVER_1(srng,SB,S);
+    //
+    // ctx.NHS.SERVER_2(S,UC,KEYA);
+    //
+    // window.document.write("Alice Key= 0x"+ctx.NHS.bytestostring(KEYA)+ "<br>");
+    // window.document.write("Bob's Key= 0x"+ctx.NHS.bytestostring(KEYB)+ "<br>");
+
+    function nh_ss() {
+        ctx.NHS.
+        SB = hexStringToByte(document.getElementById("nh_pk").value);
+        ctx.NHS.CLIENT(crng,SB,UC,KEYB);
+        document.getElementById("nh_uc").innerHTML = ctx.NHS.bytestostring(UC);
+        document.getElementById("nh_result").innerHTML = ctx.NHS.bytestostring(KEYB);
+    }
+</script>
+
+<label>public key (HEX): <input id="nh_pk"/></label>
+<br>
+<button onclick="nh_ss()">Generate shared secret</button>
+<p>response: <label id="nh_uc"></label></p>
+<p>shared secret: <label id="nh_result"></label></p>
+</body>
+</html>
