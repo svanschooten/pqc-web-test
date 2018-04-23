@@ -12,6 +12,6 @@ function sharedSecretSIDH() {
     if (!keypair_sidh) return;
     let otherPubKey = hexStringToByte(document.getElementById("pubkey_sidh_other").value);
     sidh.secret(otherPubKey, keypair_sidh.privateKey).then(function (value) {
-        document.getElementById("sidh_result").innerText = byteToHexString(value);
+        document.getElementById("sidh_result").value = byteToHexString(value);
     }).catch(console.error);
 }

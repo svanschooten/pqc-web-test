@@ -13,6 +13,6 @@ function decryptNTRU() {
     let keyBytes = keypair.privateKey;
     let cipher = hexStringToByte(document.getElementById("ntru_cipher").value);
     ntru.decrypt(cipher, keyBytes).then(function(value) {
-        document.getElementById("ntru_result").innerText = byteToHexString(value);
+        document.getElementById("ntru_result").value = byteToHexString(value);
     }).catch(console.error);
 }

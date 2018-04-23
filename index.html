@@ -8,6 +8,7 @@
     <script src="mceliece.js"></script>
     <script src="sidh.js"></script>
     <script src="util.js"></script>
+    <script src="jsencrypt.js"></script>
 </head>
 <body>
 
@@ -29,10 +30,21 @@
 <br>
 <label>key (HEX): <input id="aes_key"/></label>
 <br>
-<label>ciphertext (HEX): <input id="aes_cipher"/></label>
+<label>ciphertext (Base64): <input id="aes_cipher"/></label>
 <br>
 <button onclick="decryptAES()">decrypt</button>
-<p id="aes_result">decrypting result</p>
+<br>
+<textarea id="aes_result" disabled title="AES decrypting result"></textarea>
+<br>
+<br>
+<h2>RSA</h2>
+<label>public key (Base64): <input id="pubkey_rsa"/></label>
+<br>
+<label>plaintext: <input id="plaintext_rsa"/></label>
+<br>
+<button onclick="encryptRSA()">encrypt</button>
+<br>
+<textarea id="rsa_result" disabled title="RSA encrypting result"></textarea>
 <br>
 <br>
 <h2>NTRU</h2>
@@ -42,7 +54,8 @@
 <label>ciphertext (HEX): <input id="ntru_cipher"/></label>
 <br>
 <button onclick="decryptNTRU()">decrypt</button>
-<p id="ntru_result">decrypting result</p>
+<br>
+<textarea id="ntru_result" disabled title="NTRU decrypting result"></textarea>
 <h2>SIDH</h2>
 <button onclick="generateKeysSIDH()">Generate SIDH keys</button>
 <p>public key (HEX): <span id="pubkey_sidh"></span></p>
@@ -50,7 +63,8 @@
 <label>responder public key (HEX): <input id="pubkey_sidh_other"/></label>
 <br>
 <button onclick="sharedSecretSIDH()">generate shared secret</button>
-<p id="sidh_result">shared secret</p>
+<br>
+<textarea id="sidh_result" disabled title="SIDH shared secret"></textarea>
 <br>
 <br>
 <h2>McEliece</h2>
@@ -63,5 +77,6 @@
 <script src="mcaliece-test.js"></script>
 <script src="aes-test.js"></script>
 <script src="sidh-test.js"></script>
+<script src="rsa-test.js"></script>
 </body>
 </html>

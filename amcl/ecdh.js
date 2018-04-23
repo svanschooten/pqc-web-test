@@ -26,13 +26,13 @@ var ECDH = function(ctx) {
         INVALID: -4,
         EFS: ctx.BIG.MODBYTES,
         EGS: ctx.BIG.MODBYTES,
-        EAS: 16,
-        EBS: 16,
+        //EAS: 16,
+        //EBS: 16,
         SHA256: 32,
         SHA384: 48,
         SHA512: 64,
 
-        HASH_TYPE: 64,
+        //HASH_TYPE: 64,
 
         /* Convert Integer to n-byte array */
         inttobytes: function(n, len) {
@@ -435,18 +435,8 @@ var ECDH = function(ctx) {
                 r, gx, gy, s,
                 G, WP;
             //      var T=[];
-            G = new ctx.ECP(0);
 
-            gx = new ctx.BIG(0);
-            gx.rcopy(ctx.ROM_CURVE.CURVE_Gx);
-
-            if (ctx.ECP.CURVETYPE != ctx.ECP.MONTGOMERY) {
-                gy = new ctx.BIG(0);
-                gy.rcopy(ctx.ROM_CURVE.CURVE_Gy);
-                G.setxy(gx, gy);
-            } else {
-                G.setx(gx);
-            }
+			G = ctx.ECP.generator();
 
             r = new ctx.BIG(0);
             r.rcopy(ctx.ROM_CURVE.CURVE_Order);
@@ -550,13 +540,8 @@ var ECDH = function(ctx) {
 
             B = this.hashit(sha, F, 0, null, ctx.BIG.MODBYTES);
 
-            gx = new ctx.BIG(0);
-            gx.rcopy(ctx.ROM_CURVE.CURVE_Gx);
-            gy = new ctx.BIG(0);
-            gy.rcopy(ctx.ROM_CURVE.CURVE_Gy);
+			G = ctx.ECP.generator();
 
-            G = new ctx.ECP(0);
-            G.setxy(gx, gy);
             r = new ctx.BIG(0);
             r.rcopy(ctx.ROM_CURVE.CURVE_Order);
 
@@ -610,13 +595,8 @@ var ECDH = function(ctx) {
 
             B = this.hashit(sha, F, 0, null, ctx.BIG.MODBYTES);
 
-            gx = new ctx.BIG(0);
-            gx.rcopy(ctx.ROM_CURVE.CURVE_Gx);
-            gy = new ctx.BIG(0);
-            gy.rcopy(ctx.ROM_CURVE.CURVE_Gy);
+ 			G = ctx.ECP.generator();
 
-            G = new ctx.ECP(0);
-            G.setxy(gx, gy);
             r = new ctx.BIG(0);
             r.rcopy(ctx.ROM_CURVE.CURVE_Order);
 
@@ -681,11 +661,11 @@ var ECDH = function(ctx) {
                 VZ[2 * this.EFS + 1 + i] = Z[i];
             }
 
-            K = this.KDF2(sha, VZ, P1, this.EFS);
+            K = this.KDF2(sha, VZ, P1, 2*ctx.ECP.AESKEY);
 
-            for (i = 0; i < this.EAS; i++) {
+            for (i = 0; i < ctx.ECP.AESKEY; i++) {
                 K1[i] = K[i];
-                K2[i] = K[this.EAS + i];
+                K2[i] = K[ctx.ECP.AESKEY + i];
             }
 
             C = this.AES_CBC_IV0_ENCRYPT(K1, M);
@@ -729,11 +709,11 @@ var ECDH = function(ctx) {
                 VZ[2 * this.EFS + 1 + i] = Z[i];
             }
 
-            K = this.KDF2(sha, VZ, P1, this.EFS);
+            K = this.KDF2(sha, VZ, P1, 2*ctx.ECP.AESKEY);
 
-            for (i = 0; i < this.EAS; i++) {
+            for (i = 0; i < ctx.ECP.AESKEY; i++) {
                 K1[i] = K[i];
-                K2[i] = K[this.EAS + i];
+                K2[i] = K[ctx.ECP.AESKEY + i];
             }
 
             M = this.AES_CBC_IV0_DECRYPT(K1, C);
